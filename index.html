@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>VIP Casino Neon — Tài Xỉu</title>
+<style>
+  :root{
+    --bg:#090811;
+    --panel:#0f1116;
+    --neon1:#ff2d95;
+    --neon2:#3fa7ff;
+    --accent:#ffd166;
+    --glass: rgba(255,255,255,0.03);
+  }
+  html,body{height:100%;margin:0;background:radial-gradient(ellipse at center,#0b0b10 0%, #050508 60%), var(--bg);font-family:Inter,Segoe UI,Roboto,Arial,sans-serif;color:#fff;overflow:hidden}
+  /* Page layout */
+  .wrap{display:flex;flex-direction:column;height:100vh;width:100vw;align-items:center;justify-content:flex-start;padding:18px 24px;box-sizing:border-box}
+  header{width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .brand{display:flex;align-items:center;gap:12px}
+  .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--neon1),#ff7ab6);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:20px;box-shadow:0 8px 30px rgba(255,45,149,0.12),0 0 30px rgba(255,45,149,0.06) inset}
+  .title{font-size:20px;font-weight:700;letter-spacing:0.6px}
+  .subtitle{font-size:12px;color:#bfc8d6;opacity:.85}
+  .controls{display:flex;gap:10px;align-items:center}
+  .chip{background:linear-gradient(180deg,#111 0%, #121217 100%);padding:8px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);box-shadow:0 6px 18px rgba(0,0,0,0.6)}
+  /* main area */
+  .main{display:flex;flex:1;width:100%;gap:18px;margin-top:14px;align-items:stretch}
+  /* left: game area */
+  .playArea{flex:1;display:flex;flex-direction:column;align-items:center;gap:12px}
+  .panel{width:100%;max-width:980px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:16px;padding:18px;box-shadow:0 10px 40px rgba(0,0,0,0.6);border:1px solid rgba(255,255,255,0.03)}
+  .money{display:flex;align-items:center;gap:10px;font-size:20px;font-weight:700}
+  .money .val{color:var(--accent);font-size:24px}
+  .betRow{display:flex;gap:12px;align-items:center;margin-top:10px;flex-wrap:wrap}
+  input[type=number]{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:12px;border-radius:10px;color:#fff;font-size:18px;width:200px}
+  .btn{padding:12px 18px;border-radius:12px;border:none;cursor:pointer;font-weight:700;letter-spacing:0.6px}
+  .btn-primary{background:linear-gradient(90deg,var(--neon1),#ff7ab6);color:#fff;box-shadow:0 10px 30px rgba(255,45,149,0.12)}
+  .btn-secondary{background:linear-gradient(90deg,var(--neon2),#6fc8ff);color:#fff;box-shadow:0 10px 30px rgba(63,167,255,0.08)}
+  .betPick{display:flex;gap:8px}
+  .pickBtn{padding:10px 22px;border-radius:12px;border:1px solid rgba(255,255,255,0.04);cursor:pointer;background:var(--glass);font-weight:700}
+  .pickBtn.active{box-shadow:0 8px 30px rgba(0,0,0,0.6), 0 0 18px rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06)}
+  /* dice */
+  .diceWrap{display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:8px}
+  .diceRow{display:flex;gap:12px;align-items:center;justify-content:center}
+  .dice{width:94px;height:94px;border-radius:12px;background:linear-gradient(180deg,#0e0f14,#141518);display:flex;align-items:center;justify-content:center;font-size:48px;box-shadow:0 10px 30px rgba(0,0,0,0.6);border:1px solid rgba(255,255,255,0.03)}
+  .dice.rumble{animation:rumble 700ms ease-in-out}
+  @keyframes rumble{0%{transform:translateY(0) rotate(0)}25%{transform:translateY(-6px) rotate(-6deg)}50%{transform:translateY(6px) rotate(6deg)}75%{transform:translateY(-3px) rotate(-3deg)}100%{transform:translateY(0) rotate(0)}}
+  .actionRow{display:flex;gap:12px;align-items:center}
+  .meta{display:flex;gap:12px;align-items:center;font-size:13px;color:#c9d7ff;opacity:.9}
+  /* chart and big road */
+  .sideArea{width:380px;display:flex;flex-direction:column;gap:12px}
+  .chartPanel{background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02));padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+  #chart{display:grid;grid-template-columns:repeat(12,1fr);grid-auto-rows:18px;gap:6px;height:220px}
+  .cell{border-radius:4px;width:100%;height:100%}
+  .cell.tai{background:linear-gradient(90deg,var(--neon1),#ff6aa6)}
+  .cell.xiu{background:linear-gradient(90deg,var(--neon2),#7ed0ff)}
+  .bigRoad{display:grid;grid-template-columns:repeat(12,26px);grid-auto-rows:26px;gap:4px;padding:8px;background:rgba(255,255,255,0.02);border-radius:6px;height:220px;overflow:auto}
+  .bigDot{width:22px;height:22px;border-radius:50%}
+  .bigDot.tai{background:var(--neon1)}
+  .bigDot.xiu{background:var(--neon2)}
+  /* history text */
+  #history{height:140px;overflow:auto;padding:8px;background:rgba(255,255,255,0.02);border-radius:8px;font-size:13px}
+  /* bottom note */
+  footer{width:100%;display:flex;justify-content:center;padding:10px 0;color:#9fb0ff;opacity:.7;font-size:12px}
+  /* responsive */
+  @media (max-width:1000px){ .main{flex-direction:column} .sideArea{width:100%} .chartPanel{order:2} .playArea{order:1} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <div class="logo">TX</div>
+      <div>
+        <div class="title">HùngCasino — VIP Neon</div>
+        <div class="subtitle">Tài Xỉu Full Options</div>
+      </div>
+    </div>
+    <div class="controls">
+      <div class="chip">Tiền: <span id="money" style="color:var(--accent);font-weight:800;margin-left:8px">10000</span></div>
+      <div class="chip">Reset left: <span id="resetLeft" style="color:#ffd166;font-weight:800;margin-left:8px">3</span></div>
+      <div class="chip" title="Auto Bet">Auto: <input id="autoToggle" type="checkbox" style="margin-left:8px" /></div>
+    </div>
+  </header>
+
+  <div class="main">
+    <div class="playArea">
+      <div class="panel" style="max-width:980px">
+        <div class="money">💰 Số dư hiện tại: <div class="val" id="moneyTop">10000</div></div>
+
+        <div class="betRow">
+          <div style="min-width:220px">
+            <input id="betInput" type="number" placeholder="Số tiền cược">
+          </div>
+          <div class="betPick">
+            <button id="pickTai" class="pickBtn">TÀI</button>
+            <button id="pickXiu" class="pickBtn">XỈU</button>
+          </div>
+          <div class="actionRow" style="margin-left:auto">
+            <button id="spinBtn" class="btn btn-primary">🎯 QUAY</button>
+            <button id="autoBtn" class="btn btn-secondary">▶ Auto</button>
+            <button id="resetBtn" class="btn" style="background:#222;color:#ffd166">↻ Reset</button>
+          </div>
+        </div>
+
+        <div class="diceWrap">
+          <div id="countdown" class="meta">Thời gian đặt cược sẵn: <strong id="timer">0</strong>s</div>
+          <div class="diceRow">
+            <div class="dice" id="d1">⚀</div>
+            <div class="dice" id="d2">⚀</div>
+            <div class="dice" id="d3">⚀</div>
+          </div>
+          <div id="resultText" style="font-size:18px;margin-top:6px;color:#e6f0ff"></div>
+        </div>
+
+        <div style="margin-top:12px;display:flex;gap:12px;align-items:center;justify-content:center">
+          <div class="meta">Thắng: <span id="winTotal">0</span></div>
+          <div class="meta">Thua: <span id="loseTotal">0</span></div>
+        </div>
+
+        <div style="margin-top:14px">
+          <div id="history" aria-live="polite"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sideArea">
+      <div class="chartPanel panel">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div style="font-weight:700">Lịch sử (ôm 60)</div>
+          <div style="font-size:12px;color:#8faaff">Đỏ=TÀI · Xanh=XỈU</div>
+        </div>
+        <div id="chart" style="margin-top:10px"></div>
+      </div>
+
+      <div class="chartPanel panel">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div style="font-weight:700">Big Road</div>
+          <div style="font-size:12px;color:#8faaff">Chuỗi T/X</div>
+        </div>
+        <div id="bigRoad" class="bigRoad" style="margin-top:10px"></div>
+      </div>
+    </div>
+  </div>
+
+  <footer>Phiên bản VIP Neon • Giới hạn Reset 3 lần • Nhấn F12/Chuột phải sẽ bị cảnh báo</footer>
+</div>
+
+<!-- audio small ding -->
+<audio id="sfx" src="data:audio/mp3;base64,//uQZAAAAAAAAAAAAAAAAAAAAAA..." preload="auto"></audio>
+
+<script>
+/* -------------------------
+   Core game state & storage
+   ------------------------- */
+const STORAGE_KEY = 'vip_tx_state_v1';
+let state = {
+  money: 10000,
+  history: [], // 'tai'/'xiu' newest first
+  bigRoad: [], // array of 'tai'/'xiu'
+  resetLeft: 3,
+  winCount: 0,
+  loseCount: 0
+};
+// load saved
+try{
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if(raw) Object.assign(state, JSON.parse(raw));
+}catch(e){}
+
+/* DOM refs */
+const moneyTop = document.getElementById('moneyTop');
+const moneyHeader = document.getElementById('money');
+const resetLeftEl = document.getElementById('resetLeft');
+const betInput = document.getElementById('betInput');
+const pickTai = document.getElementById('pickTai');
+const pickXiu = document.getElementById('pickXiu');
+const spinBtn = document.getElementById('spinBtn');
+const autoBtn = document.getElementById('autoBtn');
+const resetBtn = document.getElementById('resetBtn');
+const d1 = document.getElementById('d1');
+const d2 = document.getElementById('d2');
+const d3 = document.getElementById('d3');
+const chart = document.getElementById('chart');
+const bigRoad = document.getElementById('bigRoad');
+const historyBox = document.getElementById('history');
+const resultText = document.getElementById('resultText');
+const timerEl = document.getElementById('timer');
+const autoToggle = document.getElementById('autoToggle');
+const sfx = document.getElementById('sfx');
+const winTotal = document.getElementById('winTotal');
+const loseTotal = document.getElementById('loseTotal');
+
+/* initial UI */
+renderAll();
+
+/* pick handlers */
+let chosen = null;
+pickTai.addEventListener('click', ()=>{ chosen='tai'; pickTai.classList.add('active'); pickXiu.classList.remove('active') });
+pickXiu.addEventListener('click', ()=>{ chosen='xiu'; pickXiu.classList.add('active'); pickTai.classList.remove('active') });
+
+/* countdown for placing (optional) */
+let countdown = 0;
+let countdownTimer = null;
+function startCountdown(seconds=0){
+  clearInterval(countdownTimer);
+  countdown = seconds;
+  timerEl.textContent = countdown;
+  if(seconds>0){
+    countdownTimer = setInterval(()=>{
+      countdown--;
+      timerEl.textContent = countdown;
+      if(countdown<=0){
+        clearInterval(countdownTimer);
+        timerEl.textContent = 0;
+      }
+    },1000);
+  } else {
+    timerEl.textContent = 0;
+  }
+}
+
+/* main play logic */
+let autoRunning = false;
+let autoInterval = null;
+autoBtn.addEventListener('click', ()=>{ toggleAuto(); });
+function toggleAuto(){
+  if(autoRunning){ stopAuto(); } else { startAuto(); }
+}
+function startAuto(){
+  autoRunning = true; autoBtn.textContent = '⏸ Auto'; autoBtn.style.background='linear-gradient(90deg,var(--neon2),#6fc8ff)';
+  autoInterval = setInterval(()=>{ attemptPlay(); }, 1400);
+}
+function stopAuto(){
+  autoRunning = false; autoBtn.textContent = '▶ Auto'; autoBtn.style.background='';
+  clearInterval(autoInterval);
+}
+
+/* attempt play invoked by manual or auto */
+spinBtn.addEventListener('click', ()=>{ attemptPlay(true); });
+
+function attemptPlay(byUser=false){
+  const bet = Math.floor(Number(betInput.value) || 0);
+  if(bet <= 0) { if(byUser) flashMsg('Nhập số tiền cược > 0'); return; }
+  if(bet > state.money) { if(byUser) flashMsg('Không đủ tiền'); return; }
+  if(!chosen) { if(byUser) flashMsg('Chọn TÀI hoặc XỈU trước'); return; }
+
+  // lock UI during roll
+  spinBtn.disabled = true; autoBtn.disabled = true;
+  // optional countdown: 0.6s for drama
+  startCountdown(0);
+
+  // animate dice rumble
+  [d1,d2,d3].forEach(el=>el.classList.add('rumble'));
+  // tiny sfx
+  try{ sfx.currentTime=0; sfx.play().catch(()=>{}); }catch(e){}
+
+  setTimeout(()=>{
+    // roll results
+    const r1 = randDie(), r2 = randDie(), r3 = randDie();
+    setDice(r1,r2,r3);
+    [d1,d2,d3].forEach(el=>el.classList.remove('rumble'));
+    const sum = r1+r2+r3;
+    const result = (sum>=11 && sum<=17) ? 'tai' : 'xiu';
+    // payout
+    if(result === chosen){
+      state.money += bet;
+      state.winCount = (state.winCount||0)+1;
+      resultText.innerHTML = `<span style="color:#b6ffb3">Thắng +${bet} → ${sum} (${result.toUpperCase()})</span>`;
+    } else {
+      state.money -= bet;
+      state.loseCount = (state.loseCount||0)+1;
+      resultText.innerHTML = `<span style="color:#ffb3d6">Thua -${bet} → ${sum} (${result.toUpperCase()})</span>`;
+    }
+    // push history and big road
+    pushHistory(result, r1,r2,r3);
+    saveState();
+    renderAll();
+    // unlock UI
+    spinBtn.disabled = false; autoBtn.disabled = false;
+  }, 700);
+}
+
+/* dice helpers */
+function randDie(){ return Math.floor(Math.random()*6)+1; }
+function setDice(a,b,c){
+  d1.textContent = toGlyph(a);
+  d2.textContent = toGlyph(b);
+  d3.textContent = toGlyph(c);
+}
+function toGlyph(n){ return ["⚀","⚁","⚂","⚃","⚄","⚅"][n-1]; }
+
+/* history & chart */
+function pushHistory(result, r1,r2,r3){
+  state.history.unshift({r:result, dice:[r1,r2,r3], time:Date.now()});
+  if(state.history.length>60) state.history.pop();
+  // update big road (simple append)
+  state.bigRoad.unshift(result);
+  if(state.bigRoad.length>120) state.bigRoad.pop();
+}
+
+/* render all */
+function renderAll(){
+  moneyTop.textContent = state.money;
+  moneyHeader.textContent = state.money;
+  resetLeftEl.textContent = state.resetLeft;
+  winTotal.textContent = state.winCount||0;
+  loseTotal.textContent = state.loseCount||0;
+  // history text
+  historyBox.innerHTML = state.history.map(h=>{
+    const dt = new Date(h.time);
+    return `<div style="padding:6px 0;border-bottom:1px dashed rgba(255,255,255,0.02)">${toGlyph(h.dice[0])} ${toGlyph(h.dice[1])} ${toGlyph(h.dice[2])} — <strong style="color:${h.r==='tai'?'#ff92bf':'#9fd6ff'}">${h.r.toUpperCase()}</strong> <span style="color:#9fb0ff;font-size:12px;margin-left:8px">${dt.toLocaleTimeString()}</span></div>`;
+  }).join('');
+  // chart
+  chart.innerHTML = '';
+  for(let i=0;i<60;i++){
+    const h = state.history[i];
+    const cell = document.createElement('div');
+    cell.className = 'cell ' + (h ? h.r : '');
+    chart.appendChild(cell);
+  }
+  // big road: place dots: simple left-to-right
+  bigRoad.innerHTML = '';
+  for(let i=0;i<state.bigRoad.length;i++){
+    const bd = document.createElement('div');
+    bd.className = 'bigDot ' + state.bigRoad[i];
+    bd.title = (i+1)+'. '+state.bigRoad[i].toUpperCase();
+    bigRoad.appendChild(bd);
+  }
+}
+
+/* reset with limit */
+resetBtn.addEventListener('click', ()=> {
+  if(state.resetLeft <= 0){
+    alert('Bạn chỉ được reset 3 lần!');
+    return;
+  }
+  if(!confirm('Xác nhận reset tiền về 10000? (Còn ' + state.resetLeft + ' lần)')) return;
+  state.resetLeft--;
+  state.money = 10000;
+  saveState();
+  renderAll();
+});
+
+/* save */
+function saveState(){
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){}
+}
+
+/* small helper flash */
+function flashMsg(msg){
+  const old = resultText.innerHTML;
+  resultText.innerText = msg;
+  setTimeout(()=>resultText.innerHTML = old,1400);
+}
+
+/* anti devtools (basic) */
+(function antiDev(){
+  // block right-click
+  document.addEventListener('contextmenu', e=>e.preventDefault());
+  // block common dev keys
+  document.addEventListener('keydown', e=>{
+    if(e.key==='F12' || (e.ctrlKey && e.shiftKey && (e.key==='I' || e.key==='J')) || (e.ctrlKey && e.key==='U')){
+      e.preventDefault();
+      alert('Không được mở DevTools!');
+    }
+  });
+  // detect console open (simple)
+  let threshold = 160;
+  setInterval(()=>{
+    const start = Date.now();
+    debugger;
+    if(Date.now() - start > threshold){
+      document.body.innerHTML = '<div style="color:#ffb3c6;font-size:28px;text-align:center;margin-top:20vh">⚠️ Phát hiện DevTools — truy cập bị chặn.</div>';
+    }
+  }, 2000);
+})();
+
+/* restore dice display if missing */
+setDice(1,1,1);
+renderAll();
+
+/* expose some functions for convenience */
+window.resetGameState = ()=>{ state = {money:10000,history:[],bigRoad:[],resetLeft:3,winCount:0,loseCount:0}; saveState(); renderAll(); };
+
+</script>
+</body>
+</html>
